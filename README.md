@@ -42,4 +42,127 @@ Color matching game for children's.
   </div>
 
   <div class="message" id="messageArea"></div>
-</div>
+</div>  <script>
+    const COLORS = [
+      {name: 'Red', hex: '#e53935'},
+      {name: 'Blue', hex: '#1e88e5'},
+      {name: 'Green', hex: '#43a047'},
+      {name: 'Yellow', hex: '#fdd835'},
+      {name: 'Orange', hex: '#fb8c00'},
+      {name: 'Purple', hex: '#8e44ad'},
+      {name: 'Pink', hex: '#ff6b9a'},
+      {name: 'Brown', hex: '#8d6e63'},
+      {name: 'Black', hex: '#222222'},
+      {name: 'White', hex: '#ffffff'},
+      {name: 'Gray', hex: '#9e9e9e'},
+      {name: 'Cyan', hex: '#00bcd4'}
+    ];
+
+    const optionsEl = document.getElementById('options');
+    const colorNameEl = document.getElementById('colorName');
+    const messageArea = document.getElementById('messageArea');
+    const starsEl = document.getElementById('stars');
+    const nextBtn = document.getElementById('nextBtn');
+    const voiceToggle = document.getElementById('voiceToggle');
+
+    let target = null;
+    let stars = 0;
+    let voiceOn = true;
+
+    function speak(text) {
+      if (!voiceOn) return;
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.95;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+      }
+    }
+
+    function pickTarget() {
+      const idx = Math.floor(Math.random() * COLORS.length);
+      return COLORS[idx];
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function startRound() {
+      messageArea.textContent = '';
+      optionsEl.innerHTML = '';
+      target = pickTarget();
+      colorNameEl.textContent = target.name;
+      speak(target.name);
+      const others = COLORS.filter(c => c.name !== target.name);
+      shuffle(others);
+      const choices = [target, ...others.slice(0, 3)];
+      shuffle(choices);
+      choices.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'color-btn';
+        btn.style.background = c.hex;
+        btn.setAttribute('aria-label', c.name + ' color');
+        const luminance = getLuminance(c.hex);
+        btn.style.color = luminance > 0.7 ? '#111' : '#fff';
+        btn.textContent = '';
+        btn.addEventListener('click', () => handlePick(c));
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function getLuminance(hex) {
+      const c = hex.replace('#','');
+      const r = parseInt(c.substr(0,2),16)/255;
+      const g = parseInt(c.substr(2,2),16)/255;
+      const b = parseInt(c.substr(4,2),16)/255;
+      const a = [r,g,b].map(v => v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4));
+      return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2];
+    }
+
+    function handlePick(choice) {
+      if (choice.name === target.name) {
+        stars++;
+        starsEl.textContent = stars;
+        messageArea.textContent = 'Great job! ⭐';
+        messageArea.className = 'message correct';
+        speak('Yes! ' + target.name);
+        flashBorder('#2ecc71');
+      } else {
+        messageArea.textContent = 'Oops! Try again.';
+        messageArea.className = 'message wrong';
+        speak('No, that is ' + choice.name + '. Try ' + target.name);
+        flashBorder('#e74c3c');
+      }
+    }
+
+    function flashBorder(color) {
+      const card = document.querySelector('.card');
+      const old = card.style.boxShadow;
+      card.style.boxShadow = `0 0 0 6px ${hexToRGBA(color,0.14)}, 0 6px 18px rgba(2,6,23,0.06)`;
+      setTimeout(() => {
+        card.style.boxShadow = old || '0 6px 18px rgba(2,6,23,0.06)';
+      }, 450);
+    }
+
+    function hexToRGBA(hex, a=1) {
+      const c = hex.replace('#','');
+      const r = parseInt(c.substr(0,2),16);
+      const g = parseInt(c.substr(2,2),16);
+      const b = parseInt(c.substr(4,2),16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    nextBtn.addEventListener('click', startRound);
+    voiceToggle.addEventListener('click', () => {
+      voiceOn = !voiceOn;
+      voiceToggle.textContent = 'Voice: ' + (voiceOn ? 'On' : 'Off');
+    });
+
+    startRound();
+  </script> 
+

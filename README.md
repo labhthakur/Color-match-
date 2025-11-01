@@ -34,3 +34,12 @@ Color matching game for children's.
     <div class="card" role="main" aria-live="polite">
       <div class="prompt" id="prompt">Tap the color:</div>
       <div class="sub" id="colorName" style="font-size:22px; font-weight:800">Red</div>
+  <div class="targets" id="options"></div>
+
+  <div class="controls">
+    <button class="btn" id="nextBtn">Next</button>
+    <button class="btn small" id="voiceToggle">Voice: On</button>
+  </div>
+
+  <div class="message" id="messageArea"></div>
+</div>

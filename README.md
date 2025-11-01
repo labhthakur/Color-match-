@@ -1,5 +1,7 @@
 Color-match-
 Color matching game for children's.
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />

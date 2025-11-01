@@ -1,4 +1,4 @@
-# Color-match-
+Color-match-
 Color matching game for children's.
 <html lang="en">
 <head>

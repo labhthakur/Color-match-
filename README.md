@@ -30,3 +30,7 @@ Color matching game for children's.
     <h1>Color Match — Learn Colors with Joy</h1>
     <div class="score">Stars: <span id="stars">0</span></div>
   </header>
+ <main>
+    <div class="card" role="main" aria-live="polite">
+      <div class="prompt" id="prompt">Tap the color:</div>
+      <div class="sub" id="colorName" style="font-size:22px; font-weight:800">Red</div>
